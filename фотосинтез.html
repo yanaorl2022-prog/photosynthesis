@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Фотосинтез — Інтерактивний конспект для НМТ</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.8/index.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.6/index.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--green-50:#f0fdf4;--green-100:#dcfce7;--green-200:#bbf7d0;--green-300:#86efac;
+--green-400:#4ade80;--green-500:#22c55e;--green-600:#16a34a;--green-700:#15803d;
+--green-800:#166534;--green-900:#14532d;
+--amber-400:#fbbf24;--amber-500:#f59e0b;
+--blue-400:#60a5fa;--blue-500:#3b82f6;--blue-600:#2563eb;
+--purple-400:#c084fc;--purple-500:#a855f7;
+--red-400:#f87171;--red-500:#ef4444;
+--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-300:#d1d5db;
+--gray-400:#9ca3af;--gray-500:#6b7280;--gray-600:#4b5563;--gray-700:#374151;
+--gray-800:#1f2937;--gray-900:#111827;
+--radius:12px;--shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);
+--shadow-lg:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--gray-50);color:var(--gray-800);line-height:1.7;overflow-x:hidden}
+
+/* Sidebar */
+.sidebar{position:fixed;left:0;top:0;width:280px;height:100vh;background:linear-gradient(180deg,var(--green-900),var(--green-800));color:#fff;overflow-y:auto;z-index:100;transition:transform .3s ease;padding:20px 0}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--green-600);border-radius:2px}
+.sidebar-header{padding:0 20px 20px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:10px}
+.sidebar-header h2{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px}
+.sidebar-header p{font-size:12px;color:var(--green-300);margin-top:4px}
+.nav-item{display:flex;align-items:center;padding:10px 20px;cursor:pointer;transition:all .2s;font-size:13px;gap:10px;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.1);border-left-color:var(--green-400)}
+.nav-item.active{background:rgba(255,255,255,.15);border-left-color:var(--green-400);font-weight:600}
+.nav-num{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.nav-item.active .nav-num{background:var(--green-400);color:var(--green-900)}
+.progress-bar{margin:15px 20px;height:6px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:var(--green-400);border-radius:3px;transition:width .5s ease;width:0%}
+.progress-text{padding:0 20px;font-size:11px;color:var(--green-300)}
+
+/* Main */
+.main{margin-left:280px;min-height:100vh}
+.hero{background:linear-gradient(135deg,var(--green-700),var(--green-600),#059669);color:#fff;padding:60px 40px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;right:-20%;width:600px;height:600px;background:radial-gradient(circle,rgba(255,255,255,.1),transparent 70%);border-radius:50%}
+.hero::after{content:'';position:absolute;bottom:-30%;left:-10%;width:400px;height:400px;background:radial-gradient(circle,rgba(255,255,255,.08),transparent 70%);border-radius:50%}
+.hero-content{position:relative;z-index:1;max-width:900px}
+.hero h1{font-size:clamp(28px,4vw,48px);font-weight:800;margin-bottom:12px;line-height:1.2}
+.hero .subtitle{font-size:18px;opacity:.9;margin-bottom:20px}
+.hero .badge{display:inline-block;background:rgba(255,255,255,.2);padding:6px 14px;border-radius:20px;font-size:13px;margin-right:8px;margin-bottom:8px;backdrop-filter:blur(4px)}
+
+/* Sections */
+.section{padding:40px;max-width:960px;margin:0 auto}
+.section-title{font-size:28px;font-weight:800;color:var(--green-800);margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.section-title .num{width:40px;height:40px;border-radius:50%;background:var(--green-600);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0}
+.section-subtitle{color:var(--gray-500);margin-bottom:30px;font-size:15px}
+.divider{height:1px;background:var(--gray-200);margin:40px 0}
+
+/* Cards */
+.card{background:#fff;border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);margin-bottom:20px;border:1px solid var(--gray-200);transition:all .3s}
+.card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.card-title{font-size:18px;font-weight:700;color:var(--green-800);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card-title .icon{font-size:22px}
+
+/* Lists */
+.feature-list{list-style:none;padding:0}
+.feature-list li{padding:8px 0 8px 28px;position:relative;font-size:14px}
+.feature-list li::before{content:'✦';position:absolute;left:0;color:var(--green-500);font-size:14px}
+.feature-list.check li::before{content:'✓';color:var(--green-600);font-weight:700}
+
+/* Tables */
+.table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--gray-200);margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead{background:var(--green-700);color:#fff}
+th{padding:12px 16px;text-align:left;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+td{padding:10px 16px;border-bottom:1px solid var(--gray-100)}
+tbody tr{transition:background .2s}
+tbody tr:hover{background:var(--green-50)}
+tbody tr:last-child td{border-bottom:none}
+
+/* Highlight boxes */
+.highlight{background:linear-gradient(135deg,var(--green-50),var(--green-100));border-left:4px solid var(--green-500);padding:16px 20px;border-radius:0 var(--radius) var(--radius) 0;margin:16px 0;font-size:14px}
+.highlight.warning{background:linear-gradient(135deg,#fef3c7,#fef9c3);border-left-color:var(--amber-500)}
+.highlight.info{background:linear-gradient(135deg,#dbeafe,#eff6ff);border-left-color:var(--blue-500)}
+.highlight.danger{background:linear-gradient(135deg,#fee2e2,#fef2f2);border-left-color:var(--red-500)}
+.highlight strong{color:var(--green-800)}
+.highlight.warning strong{color:#92400e}
+.highlight.danger strong{color:#991b1b}
+
+/* Equation */
+.equation{background:var(--gray-800);color:#fff;padding:20px;border-radius:var(--radius);text-align:center;font-family:'JetBrains Mono',monospace;font-size:16px;margin:16px 0;position:relative;overflow:hidden}
+.equation::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green-400),var(--blue-400),var(--purple-400))}
+.equation .arrow{color:var(--green-400);margin:0 8px}
+.equation small{color:var(--gray-400);font-size:11px;display:block;margin-top:6px}
+
+/* Interactive Diagrams */
+.diagram-container{background:#fff;border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);border:1px solid var(--gray-200);margin:20px 0;text-align:center}
+.diagram-container svg{max-width:100%;height:auto}
+
+/* Chloroplast Interactive */
+.chloroplast-interactive{position:relative}
+.chloro-part{cursor:pointer;transition:all .3s}
+.chloro-part:hover{filter:brightness(1.2);transform:scale(1.02)}
+.chloro-tooltip{position:absolute;background:var(--gray-800);color:#fff;padding:10px 14px;border-radius:8px;font-size:12px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:10;max-width:220px;line-height:1.4}
+
+/* Spectrum */
+.spectrum-bar{display:flex;height:30px;border-radius:6px;overflow:hidden;margin:10px 0}
+.spectrum-bar div{flex:1;transition:all .3s;cursor:pointer}
+.spectrum-bar div:hover{transform:scaleY(1.3)}
+
+/* Phase Cards */
+.phase-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0}
+.phase-card{border-radius:var(--radius);padding:24px;position:relative;overflow:hidden}
+.phase-card.light{background:linear-gradient(135deg,#fef9c3,#fef3c7);border:2px solid var(--amber-400)}
+.phase-card.dark{background:linear-gradient(135deg,#dbeafe,#eff6ff);border:2px solid var(--blue-400)}
+.phase-card h3{font-size:18px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.phase-card .phase-icon{font-size:28px}
+
+/* Quiz */
+.quiz-container{background:#fff;border-radius:var(--radius);padding:30px;box-shadow:var(--shadow-lg);border:2px solid var(--green-200)}
+.quiz-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid var(--gray-100)}
+.quiz-score{font-size:14px;color:var(--gray-500)}
+.quiz-score span{font-weight:700;color:var(--green-600);font-size:20px}
+.quiz-question{font-size:16px;font-weight:600;margin-bottom:20px;color:var(--gray-800)}
+.quiz-options{display:flex;flex-direction:column;gap:10px}
+.quiz-option{padding:14px 18px;border:2px solid var(--gray-200);border-radius:10px;cursor:pointer;transition:all .2s;font-size:14px;display:flex;align-items:center;gap:12px}
+.quiz-option:hover{border-color:var(--green-400);background:var(--green-50)}
+.quiz-option.selected{border-color:var(--green-500);background:var(--green-50)}
+.quiz-option.correct{border-color:var(--green-500);background:var(--green-100);color:var(--green-800)}
+.quiz-option.wrong{border-color:var(--red-500);background:#fee2e2;color:#991b1b}
+.quiz-option .letter{width:28px;height:28px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
+.quiz-option.correct .letter{background:var(--green-500);color:#fff}
+.quiz-option.wrong .letter{background:var(--red-500);color:#fff}
+.quiz-nav{display:flex;justify-content:space-between;margin-top:24px;padding-top:16px;border-top:1px solid var(--gray-100)}
+.btn{padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-size:14px;font-weight:600;transition:all .2s;font-family:inherit}
+.btn-primary{background:var(--green-600);color:#fff}
+.btn-primary:hover{background:var(--green-700);transform:translateY(-1px)}
+.btn-secondary{background:var(--gray-100);color:var(--gray-700)}
+.btn-secondary:hover{background:var(--gray-200)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Flashcards */
+.flashcard-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin:20px 0}
+.flashcard{perspective:1000px;height:160px;cursor:pointer}
+.flashcard-inner{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
+.flashcard.flipped .flashcard-inner{transform:rotateY(180deg)}
+.flashcard-front,.flashcard-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;font-weight:600}
+.flashcard-front{background:linear-gradient(135deg,var(--green-500),var(--green-600));color:#fff;font-size:15px}
+.flashcard-back{background:linear-gradient(135deg,var(--amber-400),var(--amber-500));color:var(--gray-800);transform:rotateY(180deg);font-size:14px}
+
+/* Process Animation */
+.process-flow{display:flex;align-items:center;gap:0;margin:20px 0;flex-wrap:wrap;justify-content:center}
+.process-step{background:#fff;border:2px solid var(--green-300);border-radius:10px;padding:12px 16px;font-size:12px;font-weight:600;text-align:center;min-width:100px;transition:all .3s;cursor:pointer}
+.process-step:hover{background:var(--green-50);transform:scale(1.05)}
+.process-step.active{background:var(--green-500);color:#fff;border-color:var(--green-600)}
+.process-arrow{font-size:20px;color:var(--green-400);margin:0 4px}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--gray-100);padding:4px;border-radius:10px;flex-wrap:wrap}
+.tab{padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;transition:all .2s;border:none;background:transparent;font-family:inherit}
+.tab.active{background:#fff;box-shadow:var(--shadow);font-weight:600;color:var(--green-700)}
+.tab-content{display:none}
+.tab-content.active{display:block;animation:fadeIn .3s ease}
+
+/* Animations */
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 4px rgba(34,197,94,.4))}50%{filter:drop-shadow(0 0 12px rgba(34,197,94,.8))}}
+@keyframes dash{to{stroke-dashoffset:0}}
+@keyframes bubbleUp{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-40px);opacity:0}}
+.animate-float{animation:float 3s ease-in-out infinite}
+.animate-glow{animation:glow 2s ease-in-out infinite}
+
+/* Mobile */
+.menu-toggle{display:none;position:fixed;top:16px;left:16px;z-index:200;width:44px;height:44px;border-radius:10px;background:var(--green-700);color:#fff;border:none;cursor:pointer;font-size:20px;box-shadow:var(--shadow-lg)}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:90}
+
+@media(max-width:900px){
+.sidebar{transform:translateX(-100%)}
+.sidebar.open{transform:translateX(0)}
+.main{margin-left:0}
+.menu-toggle{display:flex;align-items:center;justify-content:center}
+.overlay.show{display:block}
+.phase-grid{grid-template-columns:1fr}
+.hero{padding:40px 20px}
+.section{padding:24px 16px}
+}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--gray-100)}
+::-webkit-scrollbar-thumb{background:var(--green-300);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--green-400)}
+
+/* Print */
+@media print{.sidebar,.menu-toggle{display:none}.main{margin-left:0}}
+
+/* Factor graph */
+.factor-graph{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+.factor-card{background:#fff;border-radius:var(--radius);padding:16px;border:1px solid var(--gray-200);text-align:center}
+.factor-card h4{font-size:13px;color:var(--gray-600);margin-bottom:8px}
+.factor-card .graph-svg{width:100%;height:100px}
+
+/* C3 C4 CAM */
+.plant-type-tabs{display:flex;gap:8px;margin-bottom:16px}
+.plant-type-btn{flex:1;padding:12px;border-radius:10px;border:2px solid var(--gray-200);background:#fff;cursor:pointer;text-align:center;transition:all .2s;font-family:inherit}
+.plant-type-btn.active{border-color:var(--green-500);background:var(--green-50)}
+.plant-type-btn h4{font-size:14px;font-weight:700;color:var(--green-700)}
+.plant-type-btn p{font-size:11px;color:var(--gray-500)}
+
+/* History timeline */
+.timeline{position:relative;padding-left:30px;margin:20px 0}
+.timeline::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:var(--green-300)}
+.timeline-item{position:relative;margin-bottom:20px;padding:12px 16px;background:#fff;border-radius:var(--radius);border:1px solid var(--gray-200);font-size:13px}
+.timeline-item::before{content:'';position:absolute;left:-24px;top:16px;width:12px;height:12px;border-radius:50%;background:var(--green-500);border:3px solid var(--green-200)}
+.timeline-item strong{color:var(--green-700)}
+
+/* Experiment cards */
+.experiment-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:20px 0}
+.experiment-card{background:#fff;border-radius:var(--radius);overflow:hidden;border:1px solid var(--gray-200);transition:all .3s}
+.experiment-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px)}
+.experiment-icon{height:80px;display:flex;align-items:center;justify-content:center;font-size:40px}
+.experiment-card:nth-child(1) .experiment-icon{background:linear-gradient(135deg,#fef3c7,#fef9c3)}
+.experiment-card:nth-child(2) .experiment-icon{background:linear-gradient(135deg,#dbeafe,#eff6ff)}
+.experiment-card:nth-child(3) .experiment-icon{background:linear-gradient(135deg,#dcfce7,#f0fdf4)}
+.experiment-body{padding:16px}
+.experiment-body h4{font-size:14px;font-weight:700;margin-bottom:6px;color:var(--gray-800)}
+.experiment-body p{font-size:12px;color:var(--gray-600)}
+
+/* Trap cards */
+.trap-card{background:#fff;border-radius:var(--radius);padding:16px;margin-bottom:12px;border-left:4px solid var(--red-400);cursor:pointer;transition:all .3s}
+.trap-card.revealed{border-left-color:var(--green-500)}
+.trap-wrong{color:var(--red-500);font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.trap-right{color:var(--green-600);font-size:14px;margin-top:8px;display:none;padding-top:8px;border-top:1px dashed var(--gray-200)}
+.trap-card.revealed .trap-right{display:block}
+.trap-hint{font-size:11px;color:var(--gray-400);margin-top:4px}
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<nav class="sidebar" id="sidebar">
+<div class="sidebar-header">
+<h2>🌿 Фотосинтез</h2>
+<p>Інтерактивний конспект для НМТ</p>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="progress-text" id="progressText">Прогрес: 0 із 17 розділів</div>
+</div>
+<div id="navItems"></div>
+</nav>
+
+<main class="main">
+<!-- HERO -->
+<section class="hero" id="top">
+<div class="hero-content">
+<h1>🌱 Фотосинтез</h1>
+<p class="subtitle">Повний інтерактивний конспект для підготовки до НМТ з біології</p>
+<div>
+<span class="badge">📚 10–11 клас</span>
+<span class="badge">🧬 17 розділів</span>
+<span class="badge">🎯 Тестові пастки</span>
+<span class="badge">📝 Тренувальний тест</span>
+</div>
+</div>
+</section>
+
+<!-- SECTION 1 -->
+<section class="section" id="sec1">
+<div class="section-title"><span class="num">1</span>Загальна характеристика фотосинтезу</div>
+<p class="section-subtitle">Визначення, типи організмів та ключові поняття</p>
+
+<div class="card">
+<div class="card-title"><span class="icon">🔬</span>Визначення</div>
+<div class="highlight">
+<strong>Фотосинтез</strong> — процес утворення органічних речовин із неорганічних за рахунок енергії світла за участю фотосинтетичних пігментів.
+</div>
+<ul class="feature-list">
+<li><strong>Тип живлення</strong> — фотоавтотрофний</li>
+<li><strong>Тип обміну речовин</strong> — асиміляція (анаболізм, пластичний обмін)</li>
+<li><strong>Джерело енергії</strong> — світло</li>
+<li><strong>Джерело Карбону</strong> — вуглекислий газ (CO₂)</li>
+<li>Відбувається перетворення <strong>світлової енергії → хімічна енергія</strong> органічних сполук</li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title"><span class="icon">🌍</span>Організми, здатні до фотосинтезу</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px">
+<div style="background:var(--green-50);padding:16px;border-radius:10px;text-align:center;border:1px solid var(--green-200)">
+<div style="font-size:32px;margin-bottom:6px">🌿</div>
+<div style="font-weight:600;font-size:13px">Рослини</div>
+</div>
+<div style="background:var(--blue-50);padding:16px;border-radius:10px;text-align:center;border:1px solid #bfdbfe">
+<div style="font-size:32px;margin-bottom:6px">🌊</div>
+<div style="font-weight:600;font-size:13px">Водорості</div>
+</div>
+<div style="background:var(--purple-400);padding:16px;border-radius:10px;text-align:center;color:#fff;border:1px solid var(--purple-500)">
+<div style="font-size:32px;margin-bottom:6px">🦠</div>
+<div style="font-weight:600;font-size:13px">Ціанобактерії</div>
+</div>
+<div style="background:var(--amber-400);padding:16px;border-radius:10px;text-align:center;border:1px solid var(--amber-500)">
+<div style="font-size:32px;margin-bottom:6px">🔬</div>
+<div style="font-weight:600;font-size:13px">Інші бактерії</div>
+</div>
+<div style="background:#fce7f3;padding:16px;border-radius:10px;text-align:center;border:1px solid #fbcfe8">
+<div style="font-size:32px;margin-bottom:6px">🧫</div>
+<div style="font-weight:600;font-size:13px">Евглена зелена</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- SECTION 2 -->
+<section class="section" id="sec2">
+<div class="section-title"><span class="num">2</span>Загальне рівняння фотосинтезу</div>
+<p class="section-subtitle">Хімічні формули та перетворення речовин</p>
+
+<div class="equation">
+6CO₂ + 6H₂O <span class="arrow">→</span> C₆H₁₂O₆ + 6O₂
+<small>за наявності світла та хлорофілу</small>
+</div>
+
+<div class="card">
+<div class="card-title"><span class="icon">📐</span>Розгорнуте рівняння</div>
+<div class="equation">
+6CO₂ + 12H₂O <span class="arrow">→</span> C₆H₁₂O₆ + 6O₂ + 6H₂O
+<small>показує, що вода є і реагентом, і продуктом</small>
+</div>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>Вихідні речовини</th><th>Кінцеві продукти</th></tr></thead>
+<tbody>
+<tr><td>💧 Вода (H₂O)</td><td>🍬 Органічні речовини (глюкоза)</td></tr>
+<tr><td>💨 Вуглекислий газ (CO₂)</td><td>🫧 Кисень (O₂)</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="highlight warning">
+<strong>⚠️ Важливо для НМТ!</strong> Молекулярний кисень, який виділяється під час фотосинтезу, утворюється з <strong>води</strong>, а не з вуглекислого газу. Це було доведено за допомогою методу мічених атомів.
+</div>
+
+<!-- Interactive equation builder -->
+<div class="card">
+<div class="card-title"><span class="icon">🧪</span>Інтерактивне рівняння — натисніть на речовину</div>
+<div id="equationBuilder" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;padding:20px">
+</div>
+<div id="eqInfo" style="margin-top:12px;padding:12px;background:var(--gray-50);border-radius:8px;font-size:13px;min-height:40px;text-align:center;color:var(--gray-600)">
+Натисніть на будь-яку речовину у рівнянні вище
+</div>
+</div>
+</section>
+
+<!-- SECTION 3 -->
+<section class="section" id="sec3">
+<div class="section-title"><span class="num">3</span>Хлоропласт — органела фотосинтезу</div>
+<p class="section-subtitle">Будова та функції хлоропласта. Натискайте на частини діаграми!</p>
+
+<div class="diagram-container chloroplast-interactive">
+<svg viewBox="0 0 700 400" id="chloroSVG">
+<!-- Outer membrane -->
+<ellipse class="chloro-part" data-part="outer" cx="350" cy="200" rx="310" ry="160" fill="#a7f3d0" stroke="#059669" stroke-width="4" opacity="0.6"/>
+<!-- Inner membrane -->
+<ellipse class="chloro-part" data-part="inner" cx="350" cy="200" rx="280" ry="140" fill="#d1fae5" stroke="#059669" stroke-width="3"/>
+<!-- Stroma fill -->
+<ellipse cx="350" cy="200" rx="270" ry="130" fill="#ecfdf5"/>
+<!-- DNA -->
+<circle class="chloro-part" data-part="dna" cx="560" cy="280" r="18" fill="#c084fc" stroke="#7c3aed" stroke-width="2"/>
+<text x="560" y="285" text-anchor="middle" font-size="10" fill="#fff" font-weight="700">ДНК</text>
+<!-- Ribosomes -->
+<circle class="chloro-part" data-part="ribo" cx="180" cy="290" r="5" fill="#f59e0b"/>
+<circle class="chloro-part" data-part="ribo" cx="195" cy="295" r="5" fill="#f59e0b"/>
+<circle class="chloro-part" data-part="ribo" cx="170" cy="300" r="5" fill="#f59e0b"/>
+<!-- Starch grains -->
+<ellipse class="chloro-part" data-part="starch" cx="500" cy="140" rx="25" ry="18" fill="#fbbf24" stroke="#d97706" stroke-width="2" opacity="0.8"/>
+<ellipse class="chloro-part" data-part="starch" cx="220" cy="150" rx="20" ry="15" fill="#fbbf24" stroke="#d97706" stroke-width="2" opacity="0.8"/>
+<!-- Grana (thylakoid stacks) -->
+<g class="chloro-part" data-part="grana">
+<rect x="260" y="160" width="60" height="10" rx="5" fill="#16a34a" opacity="0.9"/>
+<rect x="260" y="174" width="60" height="10" rx="5" fill="#15803d" opacity="0.9"/>
+<rect x="260" y="188" width="60" height="10" rx="5" fill="#166534" opacity="0.9"/>
+<rect x="260" y="202" width="60" height="10" rx="5" fill="#14532d" opacity="0.9"/>
+<rect x="260" y="216" width="60" height="10" rx="5" fill="#166534" opacity="0.9"/>
+</g>
+<g class="chloro-part" data-part="grana">
+<rect x="380" y="170" width="60" height="10" rx="5" fill="#16a34a" opacity="0.9"/>
+<rect x="380" y="184" width="60" height="10" rx="5" fill="#15803d" opacity="0.9"/>
+<rect x="380" y="198" width="60" height="10" rx="5" fill="#166534" opacity="0.9"/>
+<rect x="380" y="212" width="60" height="10" rx="5" fill="#14532d" opacity="0.9"/>
+</g>
+<!-- Lamellae connecting grana -->
+<path class="chloro-part" data-part="lamellae" d="M320 195 Q350 180 380 195" fill="none" stroke="#16a34a" stroke-width="4"/>
+<path class="chloro-part" data-part="lamellae" d="M320 210 Q350 220 380 210" fill="none" stroke="#15803d" stroke-width="4"/>
+<!-- Labels -->
+<text x="350" y="50" text-anchor="middle" font-size="18" font-weight="800" fill="#166534">ХЛОРОПЛАСТ</text>
+<!-- Dynamic label area -->
+<rect x="200" y="330" width="300" height="50" rx="10" fill="var(--gray-800)" id="chloroLabel" opacity="0.9"/>
+<text x="350" y="360" text-anchor="middle" font-size="13" fill="#fff" id="chloroLabelText" font-weight="600">Натисніть на частину хлоропласта</text>
+</svg>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>Структура</th><th>Особливості та функції</th></tr></thead>
+<tbody>
+<tr><td>🟢 Зовнішня мембрана</td><td>Відмежовує органелу від цитоплазми</td></tr>
+<tr><td>🟢 Внутрішня мембрана</td><td>Регулює транспорт речовин</td></tr>
+<tr><td>💚 Строма</td><td>Внутрішнє середовище, місце <strong>темнової фази</strong></td></tr>
+<tr><td>🟩 Тилакоїди</td><td>Сплощені мембранні мішечки, місце <strong>світлової фази</strong></td></tr>
+<tr><td>📚 Грани</td><td>Стопки тилакоїдів</td></tr>
+<tr><td>🔗 Ламели</td><td>Сполучають грани між собою</td></tr>
+<tr><td>🧬 Кільцева ДНК</td><td>Зберігає спадкову інформацію</td></tr>
+<tr><td>⚙️ Рибосоми 70S</td><td>Забезпечують синтез власних білків</td></tr>
+<tr><td>🟡 Крохмальні зерна</td><td>Тимчасове запасання органічних речовин</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="highlight info">
+<strong>🔬 Ендосимбіотична теорія:</strong> Наявність власної ДНК, рибосом 70S, подвійної мембрани та здатність до поділу є доказами ендосимбіотичного походження хлоропластів.
+</div>
+<div class="highlight warning">
+<strong>⚠️ Увага!</strong> У ціанобактерій хлоропластів немає. Фотосинтез відбувається за участю їхніх фотосинтетичних мембран. Ціанобактерії — прокаріоти!
+</div>
+</section>
+
+<!-- SECTION 4 -->
+<section class="section" id="sec4">
+<div class="section-title"><span class="num">4</span>Фотосинтетичні пігменти</div>
+<p class="section-subtitle">Речовини, які поглинають світлову енергію</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>Пігмент</th><th>Колір</th><th>Значення</th></tr></thead>
+<tbody>
+<tr><td><span style="display:inline-block;width:14px;height:14px;background:#22c55e;border-radius:3px;vertical-align:middle;margin-right:6px"></span>Хлорофіл a</td><td>Синьо-зелений</td><td><strong>Основний</strong> пігмент кисневого фотосинтезу</td></tr>
+<tr><td><span style="display:inline-block;width:14px;height:14px;background:#84cc16;border-radius:3px;vertical-align:middle;margin-right:6px"></span>Хлорофіл b</td><td>Жовто-зелений</td><td>Допоміжний пігмент рослин</td></tr>
+<tr><td><span style="display:inline-block;width:14px;height:14px;background:#f97316;border-radius:3px;vertical-align:middle;margin-right:6px"></span>Каротини</td><td>Помаранчевий</td><td>Поглинання світла, фотозахист</td></tr>
+<tr><td><span style="display:inline-block;width:14px;height:14px;background:#eab308;border-radius:3px;vertical-align:middle;margin-right:6px"></span>Ксантофіли</td><td>Жовтий</td><td>Допоміжні пігменти, фотозахист</td></tr>
+<tr><td><span style="display:inline-block;width:14px;height:14px;background:#ef4444;border-radius:3px;vertical-align:middle;margin-right:6px"></span>Фікобіліни</td><td>Червоний/синій</td><td>Ціанобактерії та червоні водорості</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="highlight">
+<strong>🧲 Запам'ятайте:</strong> До складу молекули хлорофілу входить атом <strong>Магнію (Mg)</strong>, а не Феруму!
+</div>
+
+<!-- Interactive Spectrum -->
+<div class="card">
+<div class="card-title"><span class="icon">🌈</span>Інтерактивний спектр поглинання</div>
+<p style="font-size:13px;color:var(--gray-500);margin-bottom:12px">Наведіть курсор на ділянку спектру, щоб побачити, як хлорофіл її поглинає</p>
+<div class="spectrum-bar" id="spectrumBar">
+<div style="background:#7c3aed" data-wave="380-420" data-abs="high"></div>
+<div style="background:#6366f1" data-wave="420-450" data-abs="high"></div>
+<div style="background:#3b82f6" data-wave="450-480" data-abs="high"></div>
+<div style="background:#06b6d4" data-wave="480-500" data-abs="medium"></div>
+<div style="background:#14b8a6" data-wave="500-520" data-abs="low"></div>
+<div style="background:#22c55e" data-wave="520-560" data-abs="low"></div>
+<div style="background:#4ade80" data-wave="560-590" data-abs="low"></div>
+<div style="background:#84cc16" data-wave="590-610" data-abs="medium"></div>
+<div style="background:#eab308" data-wave="610-630" data-abs="medium"></div>
+<div style="background:#f97316" data-wave="630-650" data-abs="medium"></div>
+<div style="background:#ef4444" data-wave="650-680" data-abs="high"></div>
+<div style="background:#dc2626" data-wave="680-700" data-abs="high"></div>
+<div style="background:#991b1b" data-wave="700-750" data-abs="low"></div>
+</div>
+<div id="spectrumInfo" style="padding:12px;background:var(--gray-50);border-radius:8px;font-size:13px;text-align:center;color:var(--gray-600);margin-top:8px">
+Наведіть на спектр
+</div>
+
+<!-- Absorption graph SVG -->
+<svg viewBox="0 0 500 200" style="width:100%;margin-top:16px">
+<rect width="500" height="200" fill="var(--gray-50)" rx="8"/>
+<!-- Grid -->
+<line x1="50" y1="170" x2="470" y2="170" stroke="var(--gray-300)" stroke-width="1"/>
+<line x1="50" y1="30" x2="50" y2="170" stroke="var(--gray-300)" stroke-width="1"/>
+<!-- Labels -->
+<text x="260" y="195" text-anchor="middle" font-size="10" fill="var(--gray-500)">Довжина хвилі (нм)</text>
+<text x="15" y="100" text-anchor="middle" font-size="10" fill="var(--gray-500)" transform="rotate(-90,15,100)">Поглинання</text>
+<!-- Wavelength labels -->
+<text x="80" y="185" text-anchor="middle" font-size="9" fill="var(--gray-400)">400</text>
+<text x="160" y="185" text-anchor="middle" font-size="9" fill="var(--gray-400)">450</text>
+<text x="240" y="185" text-anchor="middle" font-size="9" fill="var(--gray-400)">500</text>
+<text x="320" y="185" text-anchor="middle" font-size="9" fill="var(--gray-400)">550</text>
+<text x="400" y="185" text-anchor="middle" font-size="9" fill="var(--gray-400)">650</text>
+<text x="460" y="185" text-anchor="middle" font-size="9" fill="var(--gray-400)">700</text>
+<!-- Chlorophyll a curve -->
+<path d="M60 160 Q80 150 100 60 Q120 40 140 55 Q160 80 200 140 Q240 160 280 155 Q320 150 360 120 Q380 80 400 50 Q420 40 440 70 Q460 130 470 155" fill="none" stroke="#16a34a" stroke-width="2.5" id="chlA"/>
+<!-- Chlorophyll b curve -->
+<path d="M60 160 Q80 155 100 80 Q120 60 140 75 Q160 100 200 145 Q240 158 280 155 Q320 155 360 140 Q380 110 400 80 Q420 65 440 90 Q460 140 470 158" fill="none" stroke="#84cc16" stroke-width="2" stroke-dasharray="5,3" id="chlB"/>
+<!-- Legend -->
+<line x1="300" y1="20" x2="320" y2="20" stroke="#16a34a" stroke-width="2.5"/>
+<text x="325" y="24" font-size="10" fill="var(--gray-700)">Хлорофіл a</text>
+<line x1="390" y1="20" x2="410" y2="20" stroke="#84cc16" stroke-width="2" stroke-dasharray="5,3"/>
+<text x="415" y="24" font-size="10" fill="var(--gray-700)">Хлорофіл b</text>
+</svg>
+<p style="font-size:12px;color:var(--gray-500);text-align:center;margin-top:8px">
+Найефективніше хлорофіл поглинає <strong style="color:var(--purple-500)">синьо-фіолетові</strong> та <strong style="color:var(--red-500)">червоні</strong> промені. Зелене світло відбивається — тому рослини зелені.
+</p>
+</div>
+</section>
+
+<!-- SECTION 5 -->
+<section class="section" id="sec5">
+<div class="section-title"><span class="num">5</span>Фази фотосинтезу</div>
+<p class="section-subtitle">Дві взаємопов'язані фази: світлова та темнова</p>
+
+<!-- Process Flow Animation -->
+<div class="card">
+<div class="card-title"><span class="icon">⚡</span>Загальна схема фотосинтезу</div>
+<div class="process-flow" id="mainFlow">
+<div class="process-step" data-step="0">☀️ Світло</div>
+<span class="process-arrow">→</span>
+<div class="process-step" data-step="1">💧 H₂O</div>
+<span class="process-arrow">→</span>
+<div class="process-step" data-step="2">⚡ Світлова фаза</div>
+<span class="process-arrow">→</span>
+<div class="process-step" data-step="3">🔋 АТФ + НАДФ·Н</div>
+<span class="process-arrow">→</span>
+<div class="process-step" data-step="4">💨 CO₂</div>
+<span class="process-arrow">→</span>
+<div class="process-step" data-step="5">🔄 Цикл Кальвіна</div>
+<span class="process-arrow">→</span>
+<div class="process-step" data-step="6">🍬 Глюкоза</div>
+</div>
+</div>
+
+<div class="phase-grid">
+<div class="phase-card light">
+<h3><span class="phase-icon">☀️</span>Світлова фаза</h3>
+<ul class="feature-list" style="font-size:13px">
+<li>Місце: <strong>мембрани тилакоїдів</strong></li>
+<li>Умова: наявність <strong>світла</strong></li>
+<li>Фотоліз води</li>
+<li>Синтез АТФ</li>
+<li>Відновлення НАДФ⁺ → НАДФ·Н</li>
+<li>Виділення O₂</li>
+</ul>
+<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+<span style="background:#fef3c7;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600">АТФ ⚡</span>
+<span style="background:#fef3c7;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600">НАДФ·Н 🔋</span>
+<span style="background:#fef3c7;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600">O₂ 🫧</span>
+</div>
+</div>
+<div class="phase-card dark">
+<h3><span class="phase-icon">🌙</span>Темнова фаза</h3>
+<ul class="feature-list" style="font-size:13px">
+<li>Місце: <strong>строма хлоропласта</strong></li>
+<li>Умова: не потребує світла <strong>безпосередньо</strong></li>
+<li>Фіксація CO₂</li>
+<li>Цикл Кальвіна</li>
+<li>Витрачання АТФ та НАДФ·Н</li>
+<li>Утворення глюкози</li>
+</ul>
+<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+<span style="background:#dbeafe;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600">C₆H₁₂O₆ 🍬</span>
+</div>
+</div>
+</div>
+
+<!-- 5.1 Light Phase -->
+<div class="divider"></div>
+<h3 style="font-size:20px;font-weight:700;color:var(--amber-500);margin-bottom:16px">5.1. Світлова фаза</h3>
+
+<div class="card">
+<div class="card-title"><span class="icon">💧</span>Фотоліз води</div>
+<div class="equation">
+2H₂O <span class="arrow">→</span> 4H⁺ + 4e⁻ + O₂
+</div>
+<ul class="feature-list check" style="font-size:13px">
+<li>Кисень виділяється в навколишнє середовище</li>
+<li>Електрони компенсують втрату електронів фотосистемою II</li>
+<li>Протони формують протонний градієнт</li>
+</ul>
+</div>
+
+<div class="card">
+<div class="card-title"><span class="icon">⚡</span>Фотофосфорилювання</div>
+<div class="equation">
+АДФ + Фₙ <span class="arrow">→</span> АТФ
+<small>каталізує фермент АТФ-синтаза</small>
+</div>
+</div>
+
+<!-- Photosystems comparison -->
+<div class="card">
+<div class="card-title"><span class="icon">🔬</span>Фотосистеми</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Ознака</th><th style="background:#7c3aed">Фотосистема I</th><th style="background:#2563eb">Фотосистема II</th></tr></thead>
+<tbody>
+<tr><td>Реакційний центр</td><td>P700</td><td>P680</td></tr>
+<tr><td>Максимум поглинання</td><td>700 нм</td><td>680 нм</td></tr>
+<tr><td>Основна роль</td><td>Відновлення НАДФ⁺</td><td>Фотоліз води</td></tr>
+<tr><td>Послідовність (нециклічне)</td><td>Друга</td><td><strong>Перша</strong></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- Cyclic vs Non-cyclic -->
+<div class="card">
+<div class="card-title"><span class="icon">🔄</span>Циклічне vs Нециклічне фотофосфорилювання</div>
+<div class="tabs" id="phosphoTabs">
+<button class="tab active" onclick="switchPhosphoTab(0)">Нециклічне</button>
+<button class="tab" onclick="switchPhosphoTab(1)">Циклічне</button>
+</div>
+<div class="tab-content active" id="phosphoTab0">
+<div class="process-flow">
+<div class="process-step" style="border-color:var(--blue-400)">ФС II (P680)</div>
+<span class="process-arrow">→</span>
+<div class="process-step">Електронний транспорт</div>
+<span class="process-arrow">→</span>
+<div class="process-step" style="border-color:var(--purple-400)">ФС I (P700)</div>
+<span class="process-arrow">→</span>
+<div class="process-step" style="border-color:var(--green-500)">НАДФ·Н + АТФ + O₂</div>
+</div>
+<div class="table-wrap" style="margin-top:12px">
+<table>
+<thead><tr><th>Ознака</th><th>Нециклічне</th></tr></thead>
+<tbody>
+<tr><td>Фотосистема I</td><td>✅ Так</td></tr>
+<tr><td>Фотосистема II</td><td>✅ Так</td></tr>
+<tr><td>Синтез АТФ</td><td>✅ Так</td></tr>
+<tr><td>Утворення НАДФ·Н</td><td>✅ Так</td></tr>
+<tr><td>Фотоліз води</td><td>✅ Так</td></tr>
+<tr><td>Виділення кисню</td><td>✅ Так</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="tab-content" id="phosphoTab1">
+<div class="process-flow">
+<div class="process-step" style="border-color:var(--purple-400)">ФС I (P700)</div>
+<span class="process-arrow">→</span>
+<div class="process-step">Електронний транспорт</div>
+<span class="process-arrow">→</span>
+<div class="process-step" style="border-color:var(--purple-400)">ФС I (повернення)</div>
+<span class="process-arrow">→</span>
+<div class="process-step" style="border-color:var(--green-500)">АТФ</div>
+</div>
+<div class="table-wrap" style="margin-top:12px">
+<table>
+<thead><tr><th>Ознака</th><th>Циклічне</th></tr></thead>
+<tbody>
+<tr><td>Фотосистема I</td><td>✅ Так</td></tr>
+<tr><td>Фотосистема II</td><td>❌ Ні</td></tr>
+<tr><td>Синтез АТФ</td><td>✅ Так</td></tr>
+<tr><td>Утворення НАДФ·Н</td><td>❌ Ні</td></tr>
+<tr><td>Фотоліз води</td><td>❌ Ні</td></tr>
+<tr><td>Виділення кисню</td><td>❌ Ні</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<!-- Light phase summary -->
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0">
+<div style="background:linear-gradient(135deg,#fef3c7,#fff);padding:20px;border-radius:var(--radius);text-align:center;border:2px solid var(--amber-400)">
+<div style="font-size:28px;margin-bottom:6px">⚡</div>
+<div style="font-weight:800;font-size:18px;color:var(--amber-500)">АТФ</div>
+<div style="font-size:11px;color:var(--gray-500)">Джерело енергії</div>
+</div>
+<div style="background:linear-gradient(135deg,#ede9fe,#fff);padding:20px;border-radius:var(--radius);text-align:center;border:2px solid var(--purple-400)">
+<div style="font-size:28px;margin-bottom:6px">🔋</div>
+<div style="font-weight:800;font-size:18px;color:var(--purple-500)">НАДФ·Н</div>
+<div style="font-size:11px;color:var(--gray-500)">Відновна сила</div>
+</div>
+<div style="background:linear-gradient(135deg,#dbeafe,#fff);padding:20px;border-radius:var(--radius);text-align:center;border:2px solid var(--blue-400)">
+<div style="font-size:28px;margin-bottom:6px">🫧</div>
+<div style="font-weight:800;font-size:18px;color:var(--blue-500)">O₂</div>
+<div style="font-size:11px;color:var(--gray-500)">Побічний продукт</div>
+</div>
+</div>
+
+<!-- 5.2 Dark Phase -->
+<div class="divider"></div>
+<h3 style="font-size:20px;font-weight:700;color:var(--blue-500);margin-bottom:16px">5.2. Темнова фаза (Цикл Кальвіна)</h3>
+
+<div class="highlight info">
+<strong>💡 Пам'ятайте:</strong> Темнова фаза не означає, що вона відбувається лише вночі! У більшості рослин вона активно відбувається <strong>вдень</strong> одночасно зі світловою фазою.
+</div>
+
+<!-- Calvin Cycle Interactive SVG -->
+<div class="diagram-container">
+<svg viewBox="0 0 500 400" id="calvinSVG">
+<rect width="500" height="400" fill="#eff6ff" rx="12"/>
+<text x="250" y="30" text-anchor="middle" font-size="16" font-weight="800" fill="#1e40af">ЦИКЛ КАЛЬВІНА</text>
+<!-- Circle path -->
+<circle cx="250" cy="220" r="120" fill="none" stroke="#93c5fd" stroke-width="3" stroke-dasharray="8,4"/>
+<!-- CO2 input -->
+<text x="250" y="70" text-anchor="middle" font-size="12" fill="#1e40af" font-weight="600">CO₂ входить</text>
+<line x1="250" y1="75" x2="250" y2="100" stroke="#1e40af" stroke-width="2" marker-end="url(#arrowBlue)"/>
+<!-- Step 1 - Fixation -->
+<circle class="chloro-part" data-calvin="1" cx="250" cy="110" r="30" fill="#3b82f6" stroke="#1e40af" stroke-width="2" style="cursor:pointer"/>
+<text x="250" y="108" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">1. Фіксація</text>
+<text x="250" y="120" text-anchor="middle" font-size="8" fill="#dbeafe">RuBisCO</text>
+<!-- Step 2 - Reduction -->
+<circle class="chloro-part" data-calvin="2" cx="360" cy="260" r="30" fill="#8b5cf6" stroke="#6d28d9" stroke-width="2" style="cursor:pointer"/>
+<text x="360" y="258" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">2. Відновлення</text>
+<text x="360" y="270" text-anchor="middle" font-size="8" fill="#ddd6fe">АТФ+НАДФ·Н</text>
+<!-- Step 3 - Regeneration -->
+<circle class="chloro-part" data-calvin="3" cx="140" cy="260" r="30" fill="#059669" stroke="#047857" stroke-width="2" style="cursor:pointer"/>
+<text x="140" y="258" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">3. Регенерація</text>
+<text x="140" y="270" text-anchor="middle" font-size="8" fill="#d1fae5">РуБФ</text>
+<!-- Arrows between steps -->
+<path d="M275 130 Q330 170 345 235" fill="none" stroke="#6b7280" stroke-width="2" marker-end="url(#arrowGray)"/>
+<path d="M335 275 Q250 320 165 275" fill="none" stroke="#6b7280" stroke-width="2" marker-end="url(#arrowGray)"/>
+<path d="M125 235 Q130 170 230 120" fill="none" stroke="#6b7280" stroke-width="2" marker-end="url(#arrowGray)"/>
+<!-- G3P output -->
+<text x="420" y="200" text-anchor="start" font-size="11" fill="#059669" font-weight="600">Г3Ф →</text>
+<text x="420" y="215" text-anchor="start" font-size="9" fill="#6b7280">глюкоза</text>
+<!-- Arrow markers -->
+<defs>
+<marker id="arrowBlue" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#1e40af"/></marker>
+<marker id="arrowGray" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#6b7280"/></marker>
+</defs>
+<!-- Info box -->
+<rect x="50" y="340" width="400" height="45" rx="8" fill="#1e40af" opacity="0.9"/>
+<text x="250" y="360" text-anchor="middle" font-size="11" fill="#fff" id="calvinInfo" font-weight="500">Натисніть на етап циклу Кальвіна</text>
+<text x="250" y="376" text-anchor="middle" font-size="10" fill="#93c5fd" id="calvinInfo2">для детальної інформації</text>
+</svg>
+</div>
+
+<div class="highlight">
+<strong>📊 Витрати на 1 молекулу глюкози:</strong> 6 CO₂ + 18 АТФ + 12 НАДФ·Н
+</div>
+
+<div class="card">
+<div class="card-title"><span class="icon">📋</span>Три етапи циклу Кальвіна</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Етап</th><th>Що відбувається</th><th>Ключові молекули</th></tr></thead>
+<tbody>
+<tr><td><strong>1. Фіксація CO₂</strong><br><small>(карбоксилювання)</small></td><td>CO₂ приєднується до РуБФ (5-вуглецева сполука)</td><td>Фермент <strong>RuBisCO</strong></td></tr>
+<tr><td><strong>2. Відновлення</strong></td><td>Утворення Г3Ф (3-вуглецева сполука)</td><td>Витрачаються <strong>АТФ + НАДФ·Н</strong></td></tr>
+<tr><td><strong>3. Регенерація</strong></td><td>Відновлення РуБФ для продовження циклу</td><td>Витрачається <strong>АТФ</strong></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+
+<!-- SECTION 6 -->
+<section class="section" id="sec6">
+<div class="section-title"><span class="num">6</span>Порівняння світлової та темнової фаз</div>
+<p class="section-subtitle">Узагальнювальна порівняльна таблиця</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>Ознака</th><th style="background:#d97706">☀️ Світлова фаза</th><th style="background:#2563eb">🌙 Темнова фаза</th></tr></thead>
+<tbody>
+<tr><td><strong>Локалізація</strong></td><td>Мембрани тилакоїдів</td><td>Строма</td></tr>
+<tr><td><strong>Необхідність світла</strong></td><td>Безпосередня</td><td>Опосередкована</td></tr>
+<tr><td><strong>Вихідні речовини</strong></td><td>H₂O, АДФ, Фн, НАДФ⁺</td><td>CO₂, АТФ, НАДФ·Н</td></tr>
+<tr><td><strong>Фотоліз води</strong></td><td>✅ Відбувається</td><td>❌ Не відбувається</td></tr>
+<tr><td><strong>Виділення кисню</strong></td><td>✅ Так</td><td>❌ Ні</td></tr>
+<tr><td><strong>Синтез АТФ</strong></td><td>✅ Так</td><td>❌ Ні (навпаки — витрачання)</td></tr>
+<tr><td><strong>Витрачання АТФ</strong></td><td>Не основний процес</td><td>✅ Так</td></tr>
+<tr><td><strong>Фіксація CO₂</strong></td><td>❌ Ні</td><td>✅ Так</td></tr>
+<tr><td><strong>Утворення вуглеводів</strong></td><td>❌ Ні</td><td>✅ Так</td></tr>
+<tr><td><strong>Основний механізм</strong></td><td>Фотофосфорилювання</td><td>Цикл Кальвіна</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- SECTION 7 -->
+<section class="section" id="sec7">
+<div class="section-title"><span class="num">7</span>Чинники, що впливають на інтенсивність фотосинтезу</div>
+<p class="section-subtitle">Закон лімітуючого чинника та графіки залежності</p>
+
+<div class="highlight warning">
+<strong>📐 Закон лімітуючого чинника:</strong> Інтенсивність фотосинтезу обмежується тим чинником, якого <strong>найбільше бракує</strong> відносно потреб рослини.
+</div>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>Чинник</th><th>Характер впливу</th></tr></thead>
+<tbody>
+<tr><td>💡 Інтенсивність освітлення</td><td>Зростання до певної межі насичення</td></tr>
+<tr><td>🌈 Спектральний склад світла</td><td>Найефективніші червоні та синьо-фіолетові промені</td></tr>
+<tr><td>💨 Концентрація CO₂</td><td>Зростання до певної межі</td></tr>
+<tr><td>🌡️ Температура</td><td>Зростання до оптимуму, потім зниження</td></tr>
+<tr><td>💧 Забезпеченість водою</td><td>Дефіцит пригнічує фотосинтез</td></tr>
+<tr><td>🧪 Мінеральне живлення</td><td>Впливає на утворення пігментів та роботу ферментів</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- Interactive Factor Graphs -->
+<div class="factor-graph">
+<div class="factor-card">
+<h4>💡 Освітленість</h4>
+<svg viewBox="0 0 200 100" class="graph-svg">
+<line x1="20" y1="85" x2="185" y2="85" stroke="var(--gray-300)" stroke-width="1"/>
+<line x1="20" y1="15" x2="20" y2="85" stroke="var(--gray-300)" stroke-width="1"/>
+<path d="M20 85 Q60 80 80 50 Q100 30 130 22 Q160 18 185 18" fill="none" stroke="var(--amber-500)" stroke-width="2.5"/>
+<text x="100" y="98" text-anchor="middle" font-size="8" fill="var(--gray-400)">Світло →</text>
+<text x="10" y="50" text-anchor="middle" font-size="8" fill="var(--gray-400)" transform="rotate(-90,10,50)">Швидкість</text>
+</svg>
+<p style="font-size:11px;color:var(--gray-500);margin-top:4px">Зростання до насичення</p>
+</div>
+<div class="factor-card">
+<h4>🌡️ Температура</h4>
+<svg viewBox="0 0 200 100" class="graph-svg">
+<line x1="20" y1="85" x2="185" y2="85" stroke="var(--gray-300)" stroke-width="1"/>
+<line x1="20" y1="15" x2="20" y2="85" stroke="var(--gray-300)" stroke-width="1"/>
+<path d="M20 85 Q50 70 70 40 Q90 20 100 18 Q110 20 130 40 Q150 65 170 80 Q180 84 185 85" fill="none" stroke="var(--red-500)" stroke-width="2.5"/>
+<text x="100" y="98" text-anchor="middle" font-size="8" fill="var(--gray-400)">Температура →</text>
+<circle cx="100" cy="18" r="4" fill="var(--green-500)"/>
+<text x="100" y="12" text-anchor="middle" font-size="7" fill="var(--green-600)">оптимум</text>
+</svg>
+<p style="font-size:11px;color:var(--gray-500);margin-top:4px">Наявність оптимуму</p>
+</div>
+<div class="factor-card">
+<h4>💨 Концентрація CO₂</h4>
+<svg viewBox="0 0 200 100" class="graph-svg">
+<line x1="20" y1="85" x2="185" y2="85" stroke="var(--gray-300)" stroke-width="1"/>
+<line x1="20" y1="15" x2="20" y2="85" stroke="var(--gray-300)" stroke-width="1"/>
+<path d="M20 85 Q60 75 80 45 Q100 28 130 22 Q160 18 185 18" fill="none" stroke="var(--blue-500)" stroke-width="2.5"/>
+<text x="100" y="98" text-anchor="middle" font-size="8" fill="var(--gray-400)">CO₂ →</text>
+</svg>
+<p style="font-size:11px;color:var(--gray-500);margin-top:4px">Зростання до насичення</p>
+</div>
+<div class="factor-card">
+<h4>💧 Забезпеченість водою</h4>
+<svg viewBox="0 0 200 100" class="graph-svg">
+<line x1="20" y1="85" x2="185" y2="85" stroke="var(--gray-300)" stroke-width="1"/>
+<line x1="20" y1="15" x2="20" y2="85" stroke="var(--gray-300)" stroke-width="1"/>
+<path d="M20 80 Q50 70 70 45 Q90 25 110 20 Q140 18 185 18" fill="none" stroke="#06b6d4" stroke-width="2.5"/>
+<text x="100" y="98" text-anchor="middle" font-size="8" fill="var(--gray-400)">Вода →</text>
+</svg>
+<p style="font-size:11px;color:var(--gray-500);margin-top:4px">Пригнічення за дефіциту</p>
+</div>
+</div>
+
+<div class="highlight">
+<strong>🧪 Приклад:</strong> За достатньої кількості води та світла, але низької концентрації CO₂, інтенсивність фотосинтезу залишатиметься <strong>низькою</strong> — лімітує CO₂.
+</div>
+</section>
+
+<!-- SECTION 8 -->
+<section class="section" id="sec8">
+<div class="section-title"><span class="num">8</span>Пристосування листка до фотосинтезу</div>
+<p class="section-subtitle">Будова листка та її значення</p>
+
+<!-- Leaf Cross Section SVG -->
+<div class="diagram-container">
+<svg viewBox="0 0 600 350" id="leafSVG">
+<rect width="600" height="350" fill="#f0fdf4" rx="12"/>
+<text x="300" y="25" text-anchor="middle" font-size="14" font-weight="800" fill="#166534">ПОПЕРЕЧНИЙ ЗРІЗ ЛИСТКА</text>
+<!-- Cuticle -->
+<rect class="chloro-part" data-leaf="cuticle" x="50" y="40" width="500" height="12" rx="3" fill="#854d0e" opacity="0.7" style="cursor:pointer"/>
+<text x="570" y="50" font-size="9" fill="#854d0e" font-weight="600">Кутикула</text>
+<!-- Upper epidermis -->
+<rect class="chloro-part" data-leaf="upper-ep" x="50" y="52" width="500" height="25" rx="0" fill="#bbf7d0" stroke="#16a34a" stroke-width="1" style="cursor:pointer"/>
+<text x="570" y="68" font-size="9" fill="#166534" font-weight="600">Верхня епідерма</text>
+<!-- Palisade mesophyll -->
+<rect class="chloro-part" data-leaf="palisade" x="50" y="77" width="500" height="80" fill="#dcfce7" style="cursor:pointer"/>
+<!-- Palisade cells -->
+<rect x="70" y="80" width="25" height="74" rx="4" fill="#4ade80" stroke="#16a34a" stroke-width="1"/>
+<rect x="100" y="80" width="25" height="74" rx="4" fill="#4ade80" stroke="#16a34a" stroke-width="1"/>
+<rect x="130" y="80" width="25" height="74" rx="4" fill="#4ade80" stroke="#16a34a" stroke-width="1"/>
+<rect x="160" y="80" width="25" height="74" rx="4" fill="#4ade80" stroke="#16a34a" stroke-width="1"/>
+<rect x="190" y="80" width="25" height="74" rx="4" fill="#4ade80" stroke="#16a34a" stroke-width="1"/>
+<rect x="220" y="80" width="25" height="74" rx="4" fill="#4ade80" stroke="#16a34a" stroke-width="1"/>
+<rect x="350" y="80" width="25" height="74" rx="4" fill="#4ade80" stroke="#16a34a" stroke-width="1"/>
+<rect x="380" y="80" width="25" height="74" rx="4" fill="#4ade80" stroke="#16a34a" stroke-width="1"/>
+<rect x="410" y="80" width="25" height="74" rx="4" fill="#4ade80" stroke="#16a34a" stroke-width="1"/>
+<rect x="440" y="80" width="25" height="74" rx="4" fill="#4ade80" stroke="#16a34a" stroke-width="1"/>
+<rect x="470" y="80" width="25" height="74" rx="4" fill="#4ade80" stroke="#16a34a" stroke-width="1"/>
+<rect x="500" y="80" width="25" height="74" rx="4" fill="#4ade80" stroke="#16a34a" stroke-width="1"/>
+<!-- Chloroplasts in palisade -->
+<ellipse cx="82" cy="100" rx="6" ry="4" fill="#166534"/>
+<ellipse cx="82" cy="115" rx="6" ry="4" fill="#166534"/>
+<ellipse cx="82" cy="130" rx="6" ry="4" fill="#166534"/>
+<ellipse cx="112" cy="105" rx="6" ry="4" fill="#166534"/>
+<ellipse cx="112" cy="120" rx="6" ry="4" fill="#166534"/>
+<ellipse cx="142" cy="100" rx="6" ry="4" fill="#166534"/>
+<ellipse cx="142" cy="118" rx="6" ry="4" fill="#166534"/>
+<text x="570" y="120" font-size="9" fill="#166534" font-weight="600">Стовпчастий</text>
+<text x="570" y="132" font-size="9" fill="#166534" font-weight="600">мезофіл</text>
+<!-- Vascular bundle -->
+<rect class="chloro-part" data-leaf="vascular" x="260" y="77" width="80" height="180" rx="5" fill="#fef3c7" stroke="#d97706" stroke-width="2" style="cursor:pointer"/>
+<rect x="265" y="82" width="70" height="40" rx="3" fill="#fbbf24" opacity="0.6"/>
+<text x="300" y="105" text-anchor="middle" font-size="9" fill="#92400e" font-weight="700">Ксилема</text>
+<rect x="265" y="130" width="70" height="40" rx="3" fill="#fb923c" opacity="0.6"/>
+<text x="300" y="153" text-anchor="middle" font-size="9" fill="#9a3412" font-weight="700">Флоема</text>
+<text x="570" y="170" font-size="9" fill="#92400e" font-weight="600">Провідний</text>
+<text x="570" y="182" font-size="9" fill="#92400e" font-weight="600">пучок</text>
+<!-- Spongy mesophyll -->
+<rect class="chloro-part" data-leaf="spongy" x="50" y="157" width="210" height="100" fill="#d1fae5" style="cursor:pointer"/>
+<rect x="340" y="157" width="210" height="100" fill="#d1fae5" style="cursor:pointer"/>
+<!-- Irregular cells -->
+<ellipse cx="90" cy="190" rx="20" ry="15" fill="#86efac" stroke="#16a34a" stroke-width="1"/>
+<ellipse cx="140" cy="200" rx="22" ry="14" fill="#86efac" stroke="#16a34a" stroke-width="1"/>
+<ellipse cx="190" cy="185" rx="18" ry="16" fill="#86efac" stroke="#16a34a" stroke-width="1"/>
+<ellipse cx="120" cy="225" rx="20" ry="13" fill="#86efac" stroke="#16a34a" stroke-width="1"/>
+<ellipse cx="180" cy="230" rx="22" ry="12" fill="#86efac" stroke="#16a34a" stroke-width="1"/>
+<ellipse cx="380" cy="190" rx="20" ry="15" fill="#86efac" stroke="#16a34a" stroke-width="1"/>
+<ellipse cx="430" cy="200" rx="22" ry="14" fill="#86efac" stroke="#16a34a" stroke-width="1"/>
+<ellipse cx="480" cy="185" rx="18" ry="16" fill="#86efac" stroke="#16a34a" stroke-width="1"/>
+<ellipse cx="410" cy="225" rx="20" ry="13" fill="#86efac" stroke="#16a34a" stroke-width="1"/>
+<ellipse cx="470" cy="230" rx="22" ry="12" fill="#86efac" stroke="#16a34a" stroke-width="1"/>
+<text x="570" y="210" font-size="9" fill="#166534" font-weight="600">Губчастий</text>
+<text x="570" y="222" font-size="9" fill="#166534" font-weight="600">мезофіл</text>
+<!-- Lower epidermis -->
+<rect class="chloro-part" data-leaf="lower-ep" x="50" y="257" width="500" height="25" rx="0" fill="#bbf7d0" stroke="#16a34a" stroke-width="1" style="cursor:pointer"/>
+<text x="570" y="273" font-size="9" fill="#166534" font-weight="600">Нижня епідерма</text>
+<!-- Stomata -->
+<g class="chloro-part" data-leaf="stomata" style="cursor:pointer">
+<ellipse cx="150" cy="290" rx="18" ry="8" fill="#a7f3d0" stroke="#059669" stroke-width="2"/>
+<ellipse cx="150" cy="290" rx="8" ry="4" fill="#1e3a5f"/>
+<ellipse cx="400" cy="290" rx="18" ry="8" fill="#a7f3d0" stroke="#059669" stroke-width="2"/>
+<ellipse cx="400" cy="290" rx="8" ry="4" fill="#1e3a5f"/>
+</g>
+<text x="150" y="315" text-anchor="middle" font-size="9" fill="#059669" font-weight="700">Продих</text>
+<text x="400" y="315" text-anchor="middle" font-size="9" fill="#059669" font-weight="700">Продих</text>
+<!-- Info box -->
+<rect x="100" y="330" width="400" height="16" rx="4" fill="var(--gray-800)" opacity="0.85"/>
+<text x="300" y="342" text-anchor="middle" font-size="10" fill="#fff" id="leafInfo" font-weight="500">Натисніть на частину листка для інформації</text>
+</svg>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>Особливість будови</th><th>Значення</th></tr></thead>
+<tbody>
+<tr><td>📐 Широка листкова пластинка</td><td>Збільшення площі поглинання світла</td></tr>
+<tr><td>🔍 Прозора епідерма</td><td>Пропускання світла</td></tr>
+<tr><td>🟩 Стовпчастий мезофіл</td><td>Велика кількість хлоропластів</td></tr>
+<tr><td>🫧 Губчастий мезофіл</td><td>Газообмін завдяки міжклітинникам</td></tr>
+<tr><td>🌬️ Продихи</td><td>Надходження CO₂, виділення O₂, транспірація</td></tr>
+<tr><td>💧 Ксилема</td><td>Транспорт води та мінеральних речовин до листка</td></tr>
+<tr><td>🍬 Флоема</td><td>Транспорт органічних речовин від листка</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- SECTION 9 -->
+<section class="section" id="sec9">
+<div class="section-title"><span class="num">9</span>Типи фотосинтезу: C₃, C₄ та CAM</div>
+<p class="section-subtitle">Додатковий матеріал для поглибленої підготовки</p>
+
+<div class="plant-type-tabs">
+<button class="plant-type-btn active" onclick="switchPlantType(0)">
+<h4>C₃-рослини</h4>
+<p>Помірний клімат</p>
+</button>
+<button class="plant-type-btn" onclick="switchPlantType(1)">
+<h4>C₄-рослини</h4>
+<p>Жаркий клімат</p>
+</button>
+<button class="plant-type-btn" onclick="switchPlantType(2)">
+<h4>CAM-рослини</h4>
+<p>Посушливі умови</p>
+</button>
+</div>
+
+<div id="plantTypeContent">
+<div class="card" id="plantType0">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+<div style="width:48px;height:48px;border-radius:50%;background:var(--green-100);display:flex;align-items:center;justify-content:center;font-size:24px">🌾</div>
+<div>
+<h4 style="font-weight:700;color:var(--green-700)">C₃-рослини</h4>
+<p style="font-size:12px;color:var(--gray-500)">Перший продукт — 3-вуглецева сполука</p>
+</div>
+</div>
+<ul class="feature-list" style="font-size:13px">
+<li>Помірний клімат</li>
+<li>Немає спеціального розділення процесів фіксації CO₂ та циклу Кальвіна</li>
+<li>Продихи відкриваються переважно вдень</li>
+<li><strong>Приклади:</strong> пшениця, рис, картопля</li>
+</ul>
+</div>
+<div class="card" id="plantType1" style="display:none">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+<div style="width:48px;height:48px;border-radius:50%;background:#fef3c7;display:flex;align-items:center;justify-content:center;font-size:24px">🌽</div>
+<div>
+<h4 style="font-weight:700;color:var(--amber-500)">C₄-рослини</h4>
+<p style="font-size:12px;color:var(--gray-500)">Перший продукт — 4-вуглецева сполука</p>
+</div>
+</div>
+<ul class="feature-list" style="font-size:13px">
+<li>Висока температура, інтенсивне світло</li>
+<li>Розділення процесів фіксації CO₂ та циклу Кальвіна <strong>у просторі</strong></li>
+<li>Продихи відкриваються переважно вдень</li>
+<li><strong>Приклади:</strong> кукурудза, сорго, просо</li>
+</ul>
+</div>
+<div class="card" id="plantType2" style="display:none">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+<div style="width:48px;height:48px;border-radius:50%;background:#fef2f2;display:flex;align-items:center;justify-content:center;font-size:24px">🌵</div>
+<div>
+<h4 style="font-weight:700;color:var(--red-500)">CAM-рослини</h4>
+<p style="font-size:12px;color:var(--gray-500)">Перший продукт — 4-вуглецева сполука</p>
+</div>
+</div>
+<ul class="feature-list" style="font-size:13px">
+<li>Посушливі умови</li>
+<li>Розділення процесів фіксації CO₂ та циклу Кальвіна <strong>у часі</strong></li>
+<li>Продихи відкриваються переважно <strong>вночі</strong></li>
+<li><strong>Приклади:</strong> кактуси, агава, ананас</li>
+</ul>
+</div>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>Ознака</th><th>C₃</th><th>C₄</th><th>CAM</th></tr></thead>
+<tbody>
+<tr><td>Перший стабільний продукт</td><td>3-вуглецева</td><td>4-вуглецева</td><td>4-вуглецева</td></tr>
+<tr><td>Пристосування</td><td>Помірний клімат</td><td>Висока t°, інтенсивне світло</td><td>Посушливі умови</td></tr>
+<tr><td>Розділення фіксації CO₂ та циклу Кальвіна</td><td>Немає</td><td>У просторі</td><td>У часі</td></tr>
+<tr><td>Продихи</td><td>Вдень</td><td>Вдень</td><td>Вночі</td></tr>
+<tr><td>Приклади</td><td>Пшениця, рис</td><td>Кукурудза, сорго</td><td>Кактуси, агава</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- SECTION 10 -->
+<section class="section" id="sec10">
+<div class="section-title"><span class="num">10</span>Порівняння фотосинтезу та клітинного дихання</div>
+<p class="section-subtitle">Два протилежні, але взаємопов'язані процеси</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>Ознака</th><th style="background:var(--green-600)">🌿 Фотосинтез</th><th style="background:#7c3aed">🔥 Аеробне дихання</th></tr></thead>
+<tbody>
+<tr><td><strong>Тип обміну</strong></td><td>Анаболізм</td><td>Катаболізм</td></tr>
+<tr><td><strong>Основні органели</strong></td><td>Хлоропласти</td><td>Мітохондрії</td></tr>
+<tr><td><strong>Органічні речовини</strong></td><td>Синтезуються</td><td>Розщеплюються</td></tr>
+<tr><td><strong>Енергія</strong></td><td>Запасається</td><td>Вивільняється</td></tr>
+<tr><td><strong>Кисень</strong></td><td>Виділяється</td><td>Поглинається</td></tr>
+<tr><td><strong>Вуглекислий газ</strong></td><td>Поглинається</td><td>Виділяється</td></tr>
+<tr><td><strong>Вода</strong></td><td>Є реагентом</td><td>Є кінцевим продуктом</td></tr>
+<tr><td><strong>Залежність від світла</strong></td><td>Так</td><td>Ні</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="highlight warning">
+<strong>⚠️ Запам'ятайте:</strong> Рослини <strong>дихають цілодобово</strong>, а фотосинтезують лише за наявності необхідного освітлення!
+</div>
+</section>
+
+<!-- SECTION 11 -->
+<section class="section" id="sec11">
+<div class="section-title"><span class="num">11</span>Порівняння фотосинтезу та хемосинтезу</div>
+<p class="section-subtitle">Два способи автотрофного живлення</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>Ознака</th><th style="background:var(--green-600)">☀️ Фотосинтез</th><th style="background:#7c3aed">🧪 Хемосинтез</th></tr></thead>
+<tbody>
+<tr><td><strong>Джерело енергії</strong></td><td>Світло</td><td>Окиснення неорганічних речовин</td></tr>
+<tr><td><strong>Джерело Карбону</strong></td><td>CO₂</td><td>CO₂</td></tr>
+<tr><td><strong>Необхідність світла</strong></td><td>Так</td><td>Ні</td></tr>
+<tr><td><strong>Фотосинтетичні пігменти</strong></td><td>Необхідні</td><td>Не потрібні</td></tr>
+<tr><td><strong>Утворення органічних речовин</strong></td><td>Так</td><td>Так</td></tr>
+<tr><td><strong>Організми</strong></td><td>Рослини, водорості, ціанобактерії</td><td>Деякі бактерії та археї</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="highlight info">
+<strong>🔬 Історичний факт:</strong> Хемосинтез відкрив <strong>Сергій Виноградський</strong>.
+</div>
+</section>
+
+<!-- SECTION 12 -->
+<section class="section" id="sec12">
+<div class="section-title"><span class="num">12</span>Кисневий та безкисневий фотосинтез</div>
+<p class="section-subtitle">Два типи фотосинтезу залежно від донора електронів</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>Ознака</th><th style="background:var(--blue-500)">🫧 Кисневий</th><th style="background:var(--red-500)">🚫 Безкисневий</th></tr></thead>
+<tbody>
+<tr><td><strong>Донор електронів</strong></td><td>Вода (H₂O)</td><td>H₂S, H₂ та інші сполуки</td></tr>
+<tr><td><strong>Виділення O₂</strong></td><td>Так</td><td>Ні</td></tr>
+<tr><td><strong>Основні пігменти</strong></td><td>Хлорофіли</td><td>Переважно бактеріохлорофіли</td></tr>
+<tr><td><strong>Організми</strong></td><td>Рослини, водорості, ціанобактерії</td><td>Зелені та пурпурові сіркобактерії</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="equation">
+CO₂ + 2H₂S <span class="arrow">→</span> (CH₂O) + H₂O + 2S
+<small>Приклад безкисневого фотосинтезу</small>
+</div>
+</section>
+
+<!-- SECTION 13 -->
+<section class="section" id="sec13">
+<div class="section-title"><span class="num">13</span>Експериментальні дослідження та історія</div>
+<p class="section-subtitle">Ключові досліди та вчені</p>
+
+<div class="experiment-grid">
+<div class="experiment-card">
+<div class="experiment-icon">🧪</div>
+<div class="experiment-body">
+<h4>Виявлення крохмалю</h4>
+<p>Після знебарвлення листка спиртом його обробляють розчином йоду. Ділянки з крохмалем набувають <strong>синьо-чорного</strong> забарвлення.</p>
+</div>
+</div>
+<div class="experiment-card">
+<div class="experiment-icon">🫧</div>
+<div class="experiment-body">
+<h4>Виділення кисню елодеєю</h4>
+<p>На світлі водяна рослина виділяє бульбашки газу. Зібраний кисень можна виявити <strong>тліючою скіпкою</strong>, яка спалахує.</p>
+</div>
+</div>
+<div class="experiment-card">
+<div class="experiment-icon">🌓</div>
+<div class="experiment-body">
+<h4>Доведення необхідності світла</h4>
+<p>Частину листка закривають непрозорим матеріалом. Крахмаль виявляється лише в <strong>освітлених ділянках</strong>.</p>
+</div>
+</div>
+</div>
+
+<h3 style="font-size:18px;font-weight:700;color:var(--green-800);margin:24px 0 16px">📜 Історія дослідження фотосинтезу</h3>
+
+<div class="timeline">
+<div class="timeline-item"><strong>Ян ван Гельмонт</strong> — досліджував джерела збільшення маси рослин</div>
+<div class="timeline-item"><strong>Джозеф Прістлі</strong> — встановив здатність рослин «відновлювати» повітря</div>
+<div class="timeline-item"><strong>Ян Інгенгауз</strong> — довів роль світла та зелених частин рослин у виділенні кисню</div>
+<div class="timeline-item"><strong>Теодор Енгельман</strong> — дослідив залежність фотосинтезу від спектрального складу світла</div>
+<div class="timeline-item"><strong>Мелвін Кальвін</strong> — дослідив шлях фіксації CO₂ (цикл Кальвіна)</div>
+<div class="timeline-item"><strong>Семюел Рубен та Мартін Камен</strong> — за допомогою ізотопів довели, що O₂ утворюється з води</div>
+</div>
+</section>
+
+<!-- SECTION 14 -->
+<section class="section" id="sec14">
+<div class="section-title"><span class="num">14</span>Біологічне та планетарне значення</div>
+<p class="section-subtitle">Чому фотосинтез — найважливіший процес на Землі</p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px">
+<div class="card" style="text-align:center">
+<div style="font-size:36px;margin-bottom:8px">🌍</div>
+<h4 style="font-size:14px;color:var(--green-700);margin-bottom:4px">Первинна органічна речовина</h4>
+<p style="font-size:12px;color:var(--gray-500)">Створення органіки з неорганіки</p>
+</div>
+<div class="card" style="text-align:center">
+<div style="font-size:36px;margin-bottom:8px">🔗</div>
+<h4 style="font-size:14px;color:var(--green-700);margin-bottom:4px">Ланцюги живлення</h4>
+<p style="font-size:12px;color:var(--gray-500)">Енергетична основа екосистем</p>
+</div>
+<div class="card" style="text-align:center">
+<div style="font-size:36px;margin-bottom:8px">🫁</div>
+<h4 style="font-size:14px;color:var(--green-700);margin-bottom:4px">Кисень атмосфери</h4>
+<p style="font-size:12px;color:var(--gray-500)">Підтримання O₂ для аеробів</p>
+</div>
+<div class="card" style="text-align:center">
+<div style="font-size:36px;margin-bottom:8px">💨</div>
+<h4 style="font-size:14px;color:var(--green-700);margin-bottom:4px">Поглинання CO₂</h4>
+<p style="font-size:12px;color:var(--gray-500)">Регулювання парникового ефекту</p>
+</div>
+<div class="card" style="text-align:center">
+<div style="font-size:36px;margin-bottom:8px">🔄</div>
+<h4 style="font-size:14px;color:var(--green-700);margin-bottom:4px">Колообіг речовин</h4>
+<p style="font-size:12px;color:var(--gray-500)">Карбон та Оксиген у природі</p>
+</div>
+<div class="card" style="text-align:center">
+<div style="font-size:36px;margin-bottom:8px">🛡️</div>
+<h4 style="font-size:14px;color:var(--green-700);margin-bottom:4px">Озоновий шар</h4>
+<p style="font-size:12px;color:var(--gray-500)">Передумова його формування</p>
+</div>
+</div>
+</section>
+
+<!-- SECTION 15 -->
+<section class="section" id="sec15">
+<div class="section-title"><span class="num">15</span>Типові тестові пастки НМТ</div>
+<p class="section-subtitle">Натисніть на картку, щоб побачити правильне твердження</p>
+
+<div id="trapsContainer"></div>
+</section>
+
+<!-- SECTION 16 -->
+<section class="section" id="sec16">
+<div class="section-title"><span class="num">16</span>Самоперевірка — Тест НМТ</div>
+<p class="section-subtitle">10 запитань у форматі НМТ</p>
+
+<div class="quiz-container" id="quizContainer">
+<div class="quiz-header">
+<div>
+<div style="font-weight:700;font-size:18px">🎯 Тренувальний тест</div>
+<div class="quiz-score">Правильних: <span id="quizScore">0</span> із <span id="quizTotal">10</span></div>
+</div>
+<div style="text-align:right">
+<div style="font-size:12px;color:var(--gray-400)">Питання</div>
+<div style="font-weight:700;font-size:20px;color:var(--green-600)"><span id="currentQ">1</span>/10</div>
+</div>
+</div>
+<div id="quizBody"></div>
+<div class="quiz-nav">
+<button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" disabled>← Назад</button>
+<button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Далі →</button>
+</div>
+<div id="quizResult" style="display:none;text-align:center;padding:30px">
+<div style="font-size:48px;margin-bottom:12px" id="resultEmoji">🎉</div>
+<h3 style="font-size:22px;margin-bottom:8px" id="resultTitle">Результат</h3>
+<p style="color:var(--gray-500);margin-bottom:20px" id="resultText"></p>
+<button class="btn btn-primary" onclick="restartQuiz()">🔄 Спробувати ще раз</button>
+</div>
+</div>
+</section>
+
+<!-- SECTION 17 -->
+<section class="section" id="sec17">
+<div class="section-title"><span class="num">17</span>Шпаргалка для запам'ятовування</div>
+<p class="section-subtitle">Натисніть на картку, щоб перевернути</p>
+
+<div class="highlight" style="text-align:center;font-size:16px;font-weight:700;margin-bottom:24px">
+ФОТОСИНТЕЗ<br>
+<span style="font-weight:400;font-size:13px">Фотоавтотрофне живлення • Анаболізм • Хлоропласт</span>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+<div style="background:linear-gradient(135deg,#fef9c3,#fef3c7);padding:20px;border-radius:var(--radius);border:2px solid var(--amber-400)">
+<h4 style="color:var(--amber-500);margin-bottom:8px">☀️ Світлова фаза</h4>
+<ul style="font-size:12px;list-style:none;padding:0">
+<li>📍 Тилакоїди</li>
+<li>💡 Світло + вода</li>
+<li>💧 Фотоліз води</li>
+<li>⚡ Фотофосфорилювання</li>
+<li>📦 АТФ + НАДФ·Н + O₂</li>
+</ul>
+</div>
+<div style="background:linear-gradient(135deg,#dbeafe,#eff6ff);padding:20px;border-radius:var(--radius);border:2px solid var(--blue-400)">
+<h4 style="color:var(--blue-500);margin-bottom:8px">🌙 Темнова фаза</h4>
+<ul style="font-size:12px;list-style:none;padding:0">
+<li>📍 Строма</li>
+<li>💨 CO₂ + АТФ + НАДФ·Н</li>
+<li>🔧 Фіксація CO₂</li>
+<li>🔄 Цикл Кальвіна</li>
+<li>📦 Утворення вуглеводів</li>
+</ul>
+</div>
+</div>
+
+<h3 style="font-size:18px;font-weight:700;color:var(--green-800);margin-bottom:16px">🧠 5 головних асоціацій для НМТ</h3>
+<div class="flashcard-grid" id="flashcards"></div>
+
+<div class="equation" style="margin-top:24px">
+6CO₂ + 6H₂O <span class="arrow">→</span> C₆H₁₂O₆ + 6O₂
+</div>
+</section>
+
+<footer style="text-align:center;padding:40px;background:var(--green-800);color:var(--green-200);font-size:13px">
+<p style="font-size:18px;margin-bottom:8px">🌿 Успіхів на НМТ!</p>
+<p>Інтерактивний конспект з біології — Фотосинтез</p>
+</footer>
+</main>
+
+<script>
+// Navigation data
+const sections = [
+{id:'sec1',title:'Загальна характеристика'},
+{id:'sec2',title:'Рівняння фотосинтезу'},
+{id:'sec3',title:'Хлоропласт'},
+{id:'sec4',title:'Фотосинтетичні пігменти'},
+{id:'sec5',title:'Фази фотосинтезу'},
+{id:'sec6',title:'Порівняння фаз'},
+{id:'sec7',title:'Чинники впливу'},
+{id:'sec8',title:'Будова листка'},
+{id:'sec9',title:'C₃, C₄, CAM'},
+{id:'sec10',title:'Фотосинтез vs Дихання'},
+{id:'sec11',title:'Фотосинтез vs Хемосинтез'},
+{id:'sec12',title:'Кисневий та безкисневий'},
+{id:'sec13',title:'Дослідження та історія'},
+{id:'sec14',title:'Значення фотосинтезу'},
+{id:'sec15',title:'Тестові пастки'},
+{id:'sec16',title:'Тест НМТ'},
+{id:'sec17',title:'Шпаргалка'}
+];
+
+// Build navigation
+const navContainer = document.getElementById('navItems');
+sections.forEach((s,i) => {
+const div = document.createElement('div');
+div.className = 'nav-item';
+div.dataset.section = s.id;
+div.innerHTML = `<span class="nav-num">${i+1}</span><span>${s.title}</span>`;
+div.onclick = () => {
+document.getElementById(s.id).scrollIntoView({behavior:'smooth'});
+if(window.innerWidth <= 900) toggleSidebar();
+};
+navContainer.appendChild(div);
+});
+
+// Track visited sections
+const visited = new Set();
+const observer = new IntersectionObserver((entries) => {
+entries.forEach(e => {
+if(e.isIntersecting) {
+visited.add(e.target.id);
+updateProgress();
+document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+const navItem = document.querySelector(`.nav-item[data-section="${e.target.id}"]`);
+if(navItem) navItem.classList.add('active');
+}
+});
+}, {threshold:0.3});
+
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+function updateProgress() {
+const pct = (visited.size / 17) * 100;
+document.getElementById('progressFill').style.width = pct + '%';
+document.getElementById('progressText').textContent = `Прогрес: ${visited.size} із 17 розділів`;
+}
+
+// Sidebar toggle
+function toggleSidebar() {
+document.getElementById('sidebar').classList.toggle('open');
+document.getElementById('overlay').classList.toggle('show');
+}
+
+// Chloroplast interactive
+const chloroParts = {
+'outer': 'Зовнішня мембрана — відмежовує хлоропласт від цитоплазми',
+'inner': 'Внутрішня мембрана — регулює транспорт речовин',
+'dna': 'Кільцева ДНК — власна спадкова інформація (доказ ендосимбіозу)',
+'ribo': 'Рибосоми 70S — синтез власних білків (як у бактерій!)',
+'starch': 'Крохмальні зерна — тимчасове запасання глюкози',
+'grana': 'Грани — стопки тилакоїдів. Тут відбувається СВІТЛОВА фаза!',
+'lamellae': 'Ламели — з\'єднують грани між собою',
+};
+
+document.querySelectorAll('[data-part]').forEach(el => {
+el.addEventListener('click', () => {
+const part = el.dataset.part;
+if(chloroParts[part]) {
+document.getElementById('chloroLabelText').textContent = chloroParts[part];
+}
+});
+});
+
+// Calvin cycle interactive
+const calvinInfo = {
+'1': ['Етап 1: Фіксація CO₂', 'CO₂ + РуБФ (5C) → 2 молекули 3-ФГК (3C). Каталізує RuBisCO.'],
+'2': ['Етап 2: Відновлення', '3-ФГК → Г3Ф за рахунок АТФ та НАДФ·Н. Г3Ф — перший стабільний органічний продукт.'],
+'3': ['Етап 3: Регенерація', 'Частина Г3Ф використовується для відновлення РуБФ (витрачається АТФ). Цикл повторюється.']
+};
+
+document.querySelectorAll('[data-calvin]').forEach(el => {
+el.addEventListener('click', () => {
+const step = el.dataset.calvin;
+if(calvinInfo[step]) {
+document.getElementById('calvinInfo').textContent = calvinInfo[step][0];
+document.getElementById('calvinInfo2').textContent = calvinInfo[step][1];
+}
+});
+});
+
+// Leaf interactive
+const leafInfo = {
+'cuticle': 'Кутикула — захисний восковий шар, запобігає втраті води',
+'upper-ep': 'Верхня епідерма — прозора, пропускає світло до фотосинтезуючих клітин',
+'palisade': 'Стовпчастий мезофіл — основна фотосинтезуюча тканина, багато хлоропластів',
+'spongy': 'Губчастий мезофіл — пухка тканина з міжклітинниками для газообміну',
+'lower-ep': 'Нижня епідерма — тут розташовані продихи',
+'stomata': 'Продихи — регулюють газообмін (CO₂ входить, O₂ виходить) та транспірацію',
+'vascular': 'Провідний пучок: ксилема (вода ↑) та флоема (органічні речовини ↓)'
+};
+
+document.querySelectorAll('[data-leaf]').forEach(el => {
+el.addEventListener('click', () => {
+const part = el.dataset.leaf;
+if(leafInfo[part]) {
+document.getElementById('leafInfo').textContent = leafInfo[part];
+}
+});
+});
+
+// Spectrum interactive
+const spectrumData = {
+'high': {text:'🟢 Хлорофіл ПОГЛИНАЄ це світло ефективно', color:'var(--green-600)'},
+'medium': {text:'🟡 Помірне поглинання', color:'var(--amber-500)'},
+'low': {text:'🔴 Хлорофіл МАЙЖЕ НЕ поглинає — світло відбивається', color:'var(--red-500)'}
+};
+
+document.querySelectorAll('#spectrumBar > div').forEach(bar => {
+bar.addEventListener('mouseenter', () => {
+const abs = bar.dataset.abs;
+const wave = bar.dataset.wave;
+const info = spectrumData[abs];
+document.getElementById('spectrumInfo').innerHTML = `<span style="color:${info.color};font-weight:600">${info.text}</span><br><small>Довжина хвилі: ${wave} нм</small>`;
+});
+bar.addEventListener('mouseleave', () => {
+document.getElementById('spectrumInfo').innerHTML = 'Наведіть на спектр';
+});
+});
+
+// Equation builder
+const eqSubstances = [
+{formula:'6CO₂', name:'Вуглекислий газ', info:'Поглинається з повітря через продихи. Джерело Карбону для органічних речовин.'},
+{formula:'6H₂O', name:'Вода', info:'Під час фотолізу розщеплюється. Саме з води утворюється O₂!'},
+{formula:'C₆H₁₂O₆', name:'Глюкоза', info:'Основний органічний продукт фотосинтезу. Джерело енергії для клітини.'},
+{formula:'6O₂', name:'Кисень', info:'Побічний продукт. Утворюється з ВОДИ під час фотолізу.'}
+];
+
+const eqBuilder = document.getElementById('equationBuilder');
+eqSubstances.forEach((s,i) => {
+const btn = document.createElement('button');
+btn.style.cssText = 'padding:12px 20px;border-radius:10px;border:2px solid var(--green-300);background:var(--green-50);font-size:18px;font-weight:700;cursor:pointer;font-family:JetBrains Mono,monospace;transition:all .2s';
+btn.textContent = s.formula;
+btn.onmouseenter = () => btn.style.background = 'var(--green-100)';
+btn.onmouseleave = () => btn.style.background = 'var(--green-50)';
+btn.onclick = () => {
+document.getElementById('eqInfo').innerHTML = `<strong style="color:var(--green-700)">${s.formula}</strong> — ${s.name}. ${s.info}`;
+};
+eqBuilder.appendChild(btn);
+if(i < 3) {
+const arrow = document.createElement('span');
+arrow.textContent = i === 1 ? ' → ' : ' + ';
+arrow.style.cssText = 'font-size:20px;font-weight:700;color:var(--green-600)';
+eqBuilder.appendChild(arrow);
+}
+});
+
+// Phospho tabs
+function switchPhosphoTab(idx) {
+document.querySelectorAll('#phosphoTabs .tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+document.querySelectorAll('[id^="phosphoTab"]').forEach((c,i) => c.classList.toggle('active', i===idx));
+}
+
+// Plant type tabs
+function switchPlantType(idx) {
+document.querySelectorAll('.plant-type-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+for(let i=0;i<3;i++) {
+document.getElementById('plantType'+i).style.display = i===idx ? 'block' : 'none';
+}
+}
+
+// Process flow animation
+let flowStep = 0;
+const flowSteps = document.querySelectorAll('#mainFlow .process-step');
+function animateFlow() {
+flowSteps.forEach((s,i) => s.classList.toggle('active', i === flowStep));
+flowStep = (flowStep + 1) % flowSteps.length;
+}
+setInterval(animateFlow, 1200);
+
+// Test traps
+const traps = [
+{wrong:'Кисень утворюється з CO₂', right:'Кисень утворюється з H₂O (фотоліз води)'},
+{wrong:'Темнова фаза відбувається лише вночі', right:'Не потребує безпосередньої участі світла, але відбувається вдень'},
+{wrong:'Світлова фаза відбувається у стромі', right:'Світлова фаза — у мембранах тилакоїдів'},
+{wrong:'Темнова фаза відбувається у гранах', right:'Темнова фаза — у стромі хлоропласта'},
+{wrong:'CO₂ розщеплюється у світловій фазі', right:'CO₂ фіксується у темновій фазі (цикл Кальвіна)'},
+{wrong:'Хлорофіл містить Ферум (Fe)', right:'Хлорофіл містить Магній (Mg)'},
+{wrong:'Рослини дихають лише вночі', right:'Рослини дихають ЦІЛОДОБОВО'},
+{wrong:'Ціанобактерії мають хлоропласти', right:'Ціанобактерії — прокаріоти, хлоропластів не мають'},
+{wrong:'АТФ утворюється у темновій фазі', right:'АТФ утворюється у СВІТЛОВІЙ фазі (у темновій — витрачається)'},
+{wrong:'Зелене світло поглинається найкраще', right:'Найкраще поглинається червоне та синьо-фіолетове'},
+{wrong:'Фотосистема I працює першою', right:'У нециклічному потоці першою працює ФС II (P680)'}
+];
+
+const trapsContainer = document.getElementById('trapsContainer');
+traps.forEach((t,i) => {
+const card = document.createElement('div');
+card.className = 'trap-card';
+card.innerHTML = `
+<div class="trap-wrong">❌ ${t.wrong}</div>
+<div class="trap-hint">👆 Натисніть, щоб побачити правильну відповідь</div>
+<div class="trap-right">✅ ${t.right}</div>
+`;
+card.onclick = () => card.classList.toggle('revealed');
+trapsContainer.appendChild(card);
+});
+
+// Quiz
+const quizQuestions = [
+{q:'До якого типу обміну речовин належить фотосинтез?', opts:['Катаболізм','Анаболізм','Дисиміляція','Гліколіз'], correct:1},
+{q:'Де відбувається світлова фаза фотосинтезу?', opts:['У стромі','У матриксі','У мембранах тилакоїдів','У цитоплазмі'], correct:2},
+{q:'Джерелом кисню під час фотосинтезу є:', opts:['Вода','Вуглекислий газ','Глюкоза','Хлорофіл'], correct:0},
+{q:'Які продукти світлової фази використовуються у циклі Кальвіна?', opts:['Кисень і вода','Глюкоза та кисень','CO₂ і вода','АТФ і НАДФ·Н'], correct:3},
+{q:'Який хімічний елемент входить до складу хлорофілу?', opts:['Ферум','Магній','Кальцій','Натрій'], correct:1},
+{q:'Який процес характерний для темнової фази?', opts:['Фотоліз води','Виділення кисню','Фіксація CO₂','Фотофосфорилювання'], correct:2},
+{q:'Яка структура листка транспортує воду до фотосинтезуючих клітин?', opts:['Ксилема','Флоема','Кутикула','Продих'], correct:0},
+{q:'Який фермент каталізує фіксацію CO₂ у циклі Кальвіна?', opts:['Амілаза','Каталаза','Пепсин','RuBisCO'], correct:3},
+{q:'У якого організму фотосинтез відбувається без хлоропластів?', opts:['Хлорела','Елодея','Ціанобактерія','Хламідомонада'], correct:2},
+{q:'Який продукт НЕ утворюється під час циклічного фотофосфорилювання?', opts:['АТФ','Кисень','АТФ з АДФ','АТФ за участю АТФ-синтази'], correct:1}
+];
+
+let currentQuestion = 0;
+let answers = new Array(10).fill(-1);
+let quizFinished = false;
+const letters = ['А','Б','В','Г'];
+
+function renderQuestion() {
+if(quizFinished) return;
+const q = quizQuestions[currentQuestion];
+document.getElementById('currentQ').textContent = currentQuestion + 1;
+const body = document.getElementById('quizBody');
+body.innerHTML = `
+<div class="quiz-question">${currentQuestion+1}. ${q.q}</div>
+<div class="quiz-options">
+${q.opts.map((o,i) => `
+<div class="quiz-option ${answers[currentQuestion]===i?'selected':''} ${answers[currentQuestion]!==-1?(i===q.correct?'correct':(answers[currentQuestion]===i?'wrong':'')):''}" onclick="selectAnswer(${i})">
+<span class="letter">${letters[i]}</span>
+<span>${o}</span>
+</div>
+`).join('')}
+</div>
+`;
+document.getElementById('prevBtn').disabled = currentQuestion === 0;
+document.getElementById('nextBtn').textContent = currentQuestion === 9 ? 'Завершити ✓' : 'Далі →';
+}
+
+function selectAnswer(idx) {
+if(answers[currentQuestion] !== -1) return;
+answers[currentQuestion] = idx;
+const q = quizQuestions[currentQuestion];
+const correct = idx === q.correct;
+if(correct) {
+document.getElementById('quizScore').textContent = answers.filter((a,i) => a === quizQuestions[i].correct && a !== -1).length;
+}
+renderQuestion();
+}
+
+function nextQuestion() {
+if(currentQuestion < 9) {
+currentQuestion++;
+renderQuestion();
+} else {
+finishQuiz();
+}
+}
+
+function prevQuestion() {
+if(currentQuestion > 0) {
+currentQuestion--;
+renderQuestion();
+}
+}
+
+function finishQuiz() {
+quizFinished = true;
+const score = answers.filter((a,i) => a === quizQuestions[i].correct).length;
+document.getElementById('quizBody').style.display = 'none';
+document.querySelector('.quiz-nav').style.display = 'none';
+document.getElementById('quizResult').style.display = 'block';
+document.getElementById('quizScore').textContent = score;
+
+let emoji, title, text;
+if(score >= 9) { emoji='🏆'; title='Відмінно!'; text='Ви прекрасно знаєте тему фотосинтезу!'; }
+else if(score >= 7) { emoji='🎉'; title='Добре!'; text='Ви добре підготовлені, але є над чим попрацювати.'; }
+else if(score >= 5) { emoji='📚'; title='Непогано'; text='Повторіть розділи, де були помилки.'; }
+else { emoji='💪'; title='Потрібно повторити'; text='Перегляньте конспект ще раз та спробуйте знову.'; }
+
+document.getElementById('resultEmoji').textContent = emoji;
+document.getElementById('resultTitle').textContent = `${title} ${score}/10`;
+document.getElementById('resultText').textContent = text;
+}
+
+function restartQuiz() {
+currentQuestion = 0;
+answers = new Array(10).fill(-1);
+quizFinished = false;
+document.getElementById('quizBody').style.display = 'block';
+document.querySelector('.quiz-nav').style.display = 'flex';
+document.getElementById('quizResult').style.display = 'none';
+document.getElementById('quizScore').textContent = '0';
+renderQuestion();
+}
+
+renderQuestion();
+
+// Flashcards
+const flashcards = [
+{front:'Хлорофіл містить...', back:'Атом Магнію (Mg), а не Феруму!', },
+{front:'Кисень утворюється з...', back:'ВОДИ (H₂O) під час фотолізу, а не з CO₂'},
+{front:'Світлова фаза — де?', back:'У мембранах ТИЛАКОЇДІВ (грани)'},
+{front:'Темнова фаза — де?', back:'У СТРОМІ хлоропласта (цикл Кальвіна)'},
+{front:'Що зв\'язує фази?', back:'АТФ та НАДФ·Н — продукти світлової фази для темнової'},
+{front:'Рослини дихають...', back:'ЦІЛОДОБОВО, а не лише вночі!'},
+{front:'Хто перший у лінійному потоці?', back:'ФОТОСИСТЕМА II (P680), потім ФС I (P700)'},
+{front:'Ціанобактерії мають хлоропласти?', back:'НІ! Вони прокаріоти. Фотосинтезують на своїх мембранах.'},
+{front:'Фермент циклу Кальвіна', back:'RuBisCO (Рубіско) — фіксує CO₂'},
+{front:'Зелене світло...', back:'ВІДБИВАЄТЬСЯ, тому рослини зелені. Найкраще поглинається червоне і синє.'}
+];
+
+const fcContainer = document.getElementById('flashcards');
+flashcards.forEach(fc => {
+const card = document.createElement('div');
+card.className = 'flashcard';
+card.innerHTML = `
+<div class="flashcard-inner">
+<div class="flashcard-front">${fc.front}</div>
+<div class="flashcard-back">${fc.back}</div>
+</div>
+`;
+card.onclick = () => card.classList.toggle('flipped');
+fcContainer.appendChild(card);
+});
+</script>
+</body>
+</html>
